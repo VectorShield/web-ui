@@ -65,4 +65,31 @@ jobs:
           IMAGE_NAME="ghcr.io/${REPO_OWNER_LOWER}/web-ui:${{ steps.vars.outputs.tag }}"
           docker build --no-cache -t "$IMAGE_NAME" -f Dockerfile .
           docker push "$IMAGE_NAME"
-      
+
+  helm:
+    name: Helm Lint and Package
+    runs-on: ubuntu-latest
+    needs: build-and-push  # Only runs after Docker image is built
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Install Helm
+        uses: azure/setup-helm@v3
+        with:
+          version: v3.12.3
+
+      - name: Helm Lint
+        run: helm lint ./helm/web-ui
+
+      - name: Helm Package
+        run: |
+          helm package ./helm/web-ui --destination ./helm/output
+          ls -l ./helm/output
+
+      - name: Upload Packaged Chart
+        uses: actions/upload-artifact@v3
+        with:
+          name: web-ui-chart
+          path: ./helm/output

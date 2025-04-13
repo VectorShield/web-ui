@@ -1,0 +1,17 @@
+replicaCount: 1
+
+image:
+  repository: "ghcr.io/vectorshield/web-ui"
+  tag: "latest"
+  pullPolicy: IfNotPresent
+
+apiBaseUrl: "http://localhost:5000"
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: false
+  className: ""
+  host: "chart-example.local"

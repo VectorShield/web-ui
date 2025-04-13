@@ -5,3 +5,8 @@ do
     echo
     echo
 done > all-code.txt
+
+echo >> all-code.txt
+echo >> all-code.txt
+
+tree . >> all-code.txt
