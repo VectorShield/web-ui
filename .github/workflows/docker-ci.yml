@@ -22,7 +22,7 @@ jobs:
       - name: Set Up Python
         uses: actions/setup-python@v4
         with:
-          python-version: "3.12"
+          python-version: "3.13"
 
       - name: Install Dependencies
         run: |
@@ -31,7 +31,7 @@ jobs:
           pip install pytest httpx
 
       - name: Run Tests
-        run: pytest -v app/tests
+        run: pytest -v tests
 
   build-and-push:
     name: Build and Push Docker Image
