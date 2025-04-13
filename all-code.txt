@@ -1,4 +1,41 @@
-./templates/index.html
+./tests/test_web_ui.py
+import pytest
+import sys
+import os
+from httpx import AsyncClient
+from fastapi import FastAPI
+
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
+from app.web_ui import app
+
+@pytest.mark.asyncio
+async def test_index_returns_200_and_html():
+    async with AsyncClient(app=app, base_url="http://testserver") as client:
+        response = await client.get("/")
+        assert response.status_code == 200
+        assert "text/html" in response.headers["content-type"]
+        assert "Phishing Detection UI" in response.text
+        assert "<title>Phishing Detection UI</title>" in response.text
+        assert "API Base URL:" in response.text
+
+@pytest.mark.asyncio
+async def test_static_css_serving():
+    async with AsyncClient(app=app, base_url="http://testserver") as client:
+        response = await client.get("/static/style.css")
+        assert response.status_code == 200
+        assert "text/css" in response.headers["content-type"]
+        assert "body {" in response.text
+
+@pytest.mark.asyncio
+async def test_favicon_serving():
+    async with AsyncClient(app=app, base_url="http://testserver") as client:
+        response = await client.get("/favicon.ico")
+        assert response.status_code == 200
+        assert response.headers["content-type"] in ["image/x-icon", "image/vnd.microsoft.icon"]
+
+
+./app/templates/index.html
 <!DOCTYPE html>
 <html>
 <head>
@@ -7,6 +44,7 @@
     <!-- Ensures better responsiveness on mobile devices -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/static/style.css" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
 </head>
 <body>
     <div class="wrapper">
@@ -27,10 +65,16 @@
             <label>Reply To:</label>
             <input type="text" id="insert-reply_to" placeholder="replyto@example.com"/>
             
-            <label>Type (phishing or legitimate):</label>
+            <!-- Updated dropdown with the new 7 sub-labels -->
+            <label>Type:</label>
             <select id="insert-type">
-                <option value="phishing">phishing</option>
-                <option value="legitimate">legitimate</option>
+                <option value="transactional">transactional</option>
+                <option value="business">business</option>
+                <option value="newsletter">newsletter</option>
+                <option value="notification">notification</option>
+                <option value="marketing">marketing</option>
+                <option value="spam">spam</option>
+                <option value="bounced">bounced</option>
             </select>
             
             <label>Customer ID (optional):</label>
@@ -92,10 +136,16 @@
             </select>
 
             <div id="insert-options" style="display:none;">
+                <!-- Updated dropdown for Insert in EML workflow -->
                 <label>Insert as:</label>
                 <select id="insert-label">
-                    <option value="phishing">phishing</option>
-                    <option value="legitimate">legitimate</option>
+                    <option value="transactional">transactional</option>
+                    <option value="business">business</option>
+                    <option value="newsletter">newsletter</option>
+                    <option value="notification">notification</option>
+                    <option value="marketing">marketing</option>
+                    <option value="spam">spam</option>
+                    <option value="bounced">bounced</option>
                 </select>
             </div>
 
@@ -215,7 +265,8 @@
             const custId = document.getElementById('eml-customerId').value;
             const resultDiv = document.getElementById('eml-result');
             const isInsert = (action === 'insert');
-            const insertLabel = (isInsert) ? document.getElementById('insert-label').value : null;
+            // Insert label is now one of the 7 sub-labels
+            const insertLabel = isInsert ? document.getElementById('insert-label').value : null;
 
             if (!fileInput.files || fileInput.files.length === 0) {
                 resultDiv.innerText = "Please select an EML file first.";
@@ -248,7 +299,7 @@
                     endpoint = '/analyze';
                 } else if (action === 'insert') {
                     endpoint = '/insert';
-                    payload.type = insertLabel; // "phishing" or "legitimate"
+                    payload.type = insertLabel; // One of the 7 sub-labels
                 } else if (action === 'report_false_positive') {
                     endpoint = '/report_false_positive';
                 }
@@ -273,7 +324,7 @@
 </html>
 
 
-./static/style.css
+./app/static/style.css
 /* Basic resets and body styling */
 body {
     font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
@@ -375,20 +426,24 @@ button:hover {
 }
 
 
-./web_ui.py
+./app/web_ui.py
 import logging
 import os
+from pathlib import Path
 
 from fastapi import FastAPI, Request
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+
+# Base directory = /workspaces/web-ui/app
+BASE_DIR = Path(__file__).resolve().parent
 
 # If your main API is at a different URL/port, set it here:
 API_BASE_URL = os.getenv("API_BASE_URL", "http://localhost:5000")
 
 # Create the FastAPI app for the UI
-app = FastAPI(title="Phishing Detection Web UI", version="1.0.0")
+app = FastAPI(title="VectorShield Web UI", version="1.0.0")
 
 # Set up logging
 LOG_LEVEL = "INFO"
@@ -397,17 +452,18 @@ logging.basicConfig(level=LOG_LEVEL, format=LOG_FORMAT)
 logger = logging.getLogger("web_ui")
 logger.setLevel(logging.INFO)
 
-# Mount the static directory for CSS, JS, images, etc.
-app.mount("/static", StaticFiles(directory="static"), name="static")
+# Mount static directory
+app.mount("/static", StaticFiles(directory=BASE_DIR / "static"), name="static")
 
 # Set up templates directory
-templates = Jinja2Templates(directory="templates")
+templates = Jinja2Templates(directory=BASE_DIR / "templates")
+
+@app.get("/favicon.ico", include_in_schema=False)
+def favicon():
+    return FileResponse(BASE_DIR / "static" / "favicon.ico")
 
 @app.get("/", response_class=HTMLResponse)
 def index(request: Request):
-    """
-    Render the main UI using a Jinja2 template.
-    """
     return templates.TemplateResponse(
         "index.html",
         {
@@ -416,8 +472,4 @@ def index(request: Request):
         }
     )
 
-
-##
-# uvicorn web_ui:app --host 0.0.0.0 --port 8000 --reload
-##
 
