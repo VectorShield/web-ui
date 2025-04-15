@@ -66,6 +66,33 @@ jobs:
           docker build --no-cache -t "$IMAGE_NAME" -f Dockerfile .
           docker push "$IMAGE_NAME"
 
+  release:
+    runs-on: ubuntu-latest
+    
+    # You need 'write' permission for the default GITHUB_TOKEN to push to gh-pages:
+    # https://docs.github.com/en/actions/security-guides/automatic-token-authentication#modifying-permissions
+    permissions:
+      contents: write
+
+    steps:
+      - name: Check out main branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # fetch all history so chart-releaser can detect tags, etc.
+
+      - name: Configure Git
+        run: |
+          git config user.name "$GITHUB_ACTOR"
+          git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
+
+      - name: Run chart-releaser
+        uses: helm/chart-releaser-action@v1.7.0
+        env:
+          CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+        with:
+          # 'charts_dir' is where your chart subfolders live:
+          charts_dir: 'helm'
+
   helm:
     name: Helm Lint and Package
     runs-on: ubuntu-22.04
