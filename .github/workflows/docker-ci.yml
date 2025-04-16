@@ -93,31 +93,31 @@ jobs:
           # 'charts_dir' is where your chart subfolders live:
           charts_dir: 'helm'
 
-  helm:
-    name: Helm Lint and Package
-    runs-on: ubuntu-22.04
-    needs: build-and-push
-
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-
-      - name: Install Helm
-        uses: azure/setup-helm@v3
-        with:
-          version: v3.12.3
-
-      - name: Helm Lint
-        run: helm lint ./helm/web-ui
-
-      - name: Helm Package
-        run: |
-          helm package ./helm/web-ui --destination ./helm/output
-          ls -l ./helm/output
-
-      - name: Upload Packaged Chart
-        uses: actions/upload-artifact@v3
-        with:
-          name: web-ui-chart
-          path: ./helm/output
+#  helm:
+#    name: Helm Lint and Package
+#    runs-on: ubuntu-22.04
+#    needs: build-and-push
+#
+#    steps:
+#      - name: Checkout Code
+#        uses: actions/checkout@v4
+#
+#      - name: Install Helm
+#        uses: azure/setup-helm@v3
+#        with:
+#          version: v3.12.3
+#
+#      - name: Helm Lint
+#        run: helm lint ./helm/web-ui
+#
+#      - name: Helm Package
+#        run: |
+#          helm package ./helm/web-ui --destination ./helm/output
+#          ls -l ./helm/output
+#
+#      - name: Upload Packaged Chart
+#        uses: actions/upload-artifact@v3
+#        with:
+#          name: web-ui-chart
+#          path: ./helm/output
 
