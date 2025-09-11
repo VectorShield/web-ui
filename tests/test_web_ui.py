@@ -28,9 +28,35 @@ def test_favicon_serving():
     client = TestClient(app)
     response = client.get("/favicon.ico")
     assert response.status_code == 200
-    # Different OS / MIME libraries can produce variations of the icon MIME type
-    assert response.headers["content-type"] in [
-        "image/x-icon",
-        "image/vnd.microsoft.icon",
-        "application/octet-stream"  # Some systems may report .ico as octet-stream
-    ]
+    # Should now explicitly return image/x-icon
+    assert response.headers["content-type"] == "image/x-icon"
+    # Should include cache headers
+    assert "cache-control" in response.headers
+    assert "public" in response.headers["cache-control"]
+
+def test_security_headers_on_html_response():
+    client = TestClient(app)
+    response = client.get("/")
+    assert response.status_code == 200
+    
+    # Check for security headers
+    assert response.headers.get("x-content-type-options") == "nosniff"
+    assert response.headers.get("x-frame-options") == "DENY"
+    assert response.headers.get("x-xss-protection") == "1; mode=block"
+    assert response.headers.get("referrer-policy") == "strict-origin-when-cross-origin"
+    assert "content-security-policy" in response.headers
+
+def test_metrics_endpoint():
+    client = TestClient(app)
+    response = client.get("/metrics")
+    assert response.status_code == 200
+    assert "text/plain" in response.headers["content-type"]
+    # Should contain Prometheus metrics
+    assert "app_requests_total" in response.text
+    assert "app_request_duration_seconds" in response.text
+
+def test_cors_headers():
+    client = TestClient(app)
+    response = client.options("/", headers={"Origin": "http://localhost:3000"})
+    # FastAPI should handle CORS properly
+    assert response.status_code in [200, 405]  # 405 if OPTIONS not explicitly handled

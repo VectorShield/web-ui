@@ -10,214 +10,547 @@
 </head>
 <body>
     <div class="wrapper">
-        <h1>Phishing Detection UI</h1>
-        <p class="api-info"><strong>API Base URL:</strong> {{ api_base_url }}</p>
+        <header class="app-header">
+            <h1>🛡️ VectorShield</h1>
+            <p class="tagline">Phishing Detection & Email Analysis Platform</p>
+            <p class="api-info"><strong>API Base URL:</strong> {{ api_base_url }}</p>
+        </header>
 
-        <section>
-            <h2>Insert Email</h2>
-            <label>Subject:</label>
-            <input type="text" id="insert-subject" placeholder="Subject" />
-            
-            <label>Body (Base64):</label>
-            <textarea id="insert-body" rows="3"></textarea>
-            
-            <label>Sender:</label>
-            <input type="text" id="insert-sender" placeholder="sender@example.com"/>
-            
-            <label>Reply To:</label>
-            <input type="text" id="insert-reply_to" placeholder="replyto@example.com"/>
-            
-            <!-- Updated dropdown with the new 7 sub-labels -->
-            <label>Type:</label>
-            <select id="insert-type">
-                <option value="transactional">transactional</option>
-                <option value="business">business</option>
-                <option value="newsletter">newsletter</option>
-                <option value="notification">notification</option>
-                <option value="marketing">marketing</option>
-                <option value="spam">spam</option>
-                <option value="bounced">bounced</option>
-            </select>
-            
-            <label>Customer ID (optional):</label>
-            <input type="text" id="insert-customerId" placeholder="12345"/>
-            
-            <button onclick="insertEmail()">Insert</button>
-            <div id="insert-result" class="result"></div>
-        </section>
+        <nav class="tab-navigation">
+            <button class="tab-button active" onclick="switchTab(event, 'insert-tab')" data-tab="insert">
+                📥 Insert Email
+            </button>
+            <button class="tab-button" onclick="switchTab(event, 'analyze-tab')" data-tab="analyze">
+                🔍 Analyze Email
+            </button>
+            <button class="tab-button" onclick="switchTab(event, 'report-tab')" data-tab="report">
+                🚨 Report False Positive
+            </button>
+            <button class="tab-button" onclick="switchTab(event, 'eml-tab')" data-tab="eml">
+                📁 EML File Processing
+            </button>
+        </nav>
 
-        <section>
-            <h2>Analyze Email</h2>
-            <label>Subject:</label>
-            <input type="text" id="analyze-subject" placeholder="Subject"/>
-            
-            <label>Body (Base64):</label>
-            <textarea id="analyze-body" rows="3"></textarea>
-            
-            <label>Sender:</label>
-            <input type="text" id="analyze-sender" placeholder="sender@example.com"/>
-            
-            <label>Reply To:</label>
-            <input type="text" id="analyze-reply_to" placeholder="replyto@example.com"/>
-            
-            <label>Customer ID (optional):</label>
-            <input type="text" id="analyze-customerId" placeholder="12345"/>
-            
-            <button onclick="analyzeEmail()">Analyze</button>
-            <div id="analyze-result" class="result"></div>
-        </section>
+        <main class="tab-content">
+            <section id="insert-tab" class="tab-panel active">
+                <div class="panel-header">
+                    <h2>📥 Insert Email</h2>
+                    <p class="panel-description">Add a new email to the system for training and analysis</p>
+                </div>
+                
+                <form class="email-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="insert-subject">Subject *</label>
+                            <input type="text" id="insert-subject" placeholder="Enter email subject" required />
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="insert-body">Body (Base64) *</label>
+                        <textarea id="insert-body" rows="4" placeholder="Enter base64 encoded email body" required></textarea>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="insert-sender">Sender Email *</label>
+                            <input type="email" id="insert-sender" placeholder="sender@example.com" required />
+                        </div>
+                        <div class="form-group">
+                            <label for="insert-reply_to">Reply To</label>
+                            <input type="email" id="insert-reply_to" placeholder="replyto@example.com" />
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="insert-type">Email Type *</label>
+                            <select id="insert-type" required>
+                                <option value="">Select email type</option>
+                                <option value="transactional">Transactional</option>
+                                <option value="business">Business</option>
+                                <option value="newsletter">Newsletter</option>
+                                <option value="notification">Notification</option>
+                                <option value="marketing">Marketing</option>
+                                <option value="spam">Spam</option>
+                                <option value="bounced">Bounced</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="insert-customerId">Customer ID</label>
+                            <input type="text" id="insert-customerId" placeholder="12345" />
+                        </div>
+                    </div>
+                    
+                    <button type="button" class="primary-button" onclick="insertEmail()">
+                        📤 Insert Email
+                    </button>
+                </form>
+                
+                <div id="insert-result" class="result"></div>
+            </section>
 
-        <section>
-            <h2>Report False Positive</h2>
-            <label>Subject:</label>
-            <input type="text" id="report-subject" placeholder="Subject"/>
-            
-            <label>Body (Base64):</label>
-            <textarea id="report-body" rows="3"></textarea>
-            
-            <label>Sender:</label>
-            <input type="text" id="report-sender" placeholder="sender@example.com"/>
-            
-            <label>Reply To:</label>
-            <input type="text" id="report-reply_to" placeholder="replyto@example.com"/>
-            
-            <label>Customer ID (optional):</label>
-            <input type="text" id="report-customerId" placeholder="12345"/>
-            
-            <button onclick="reportFalsePositive()">Report False Positive</button>
-            <div id="report-result" class="result"></div>
-        </section>
+            <section id="analyze-tab" class="tab-panel">
+                <div class="panel-header">
+                    <h2>🔍 Analyze Email</h2>
+                    <p class="panel-description">Analyze an email for phishing detection and threat assessment</p>
+                </div>
+                
+                <form class="email-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="analyze-subject">Subject *</label>
+                            <input type="text" id="analyze-subject" placeholder="Enter email subject" required />
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="analyze-body">Body (Base64) *</label>
+                        <textarea id="analyze-body" rows="4" placeholder="Enter base64 encoded email body" required></textarea>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="analyze-sender">Sender Email *</label>
+                            <input type="email" id="analyze-sender" placeholder="sender@example.com" required />
+                        </div>
+                        <div class="form-group">
+                            <label for="analyze-reply_to">Reply To</label>
+                            <input type="email" id="analyze-reply_to" placeholder="replyto@example.com" />
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="analyze-customerId">Customer ID</label>
+                            <input type="text" id="analyze-customerId" placeholder="12345" />
+                        </div>
+                    </div>
+                    
+                    <button type="button" class="primary-button" onclick="analyzeEmail()">
+                        🔍 Analyze Email
+                    </button>
+                </form>
+                
+                <div id="analyze-result" class="result"></div>
+            </section>
 
-        <section>
-            <h2>Upload & Parse EML + Action</h2>
-            <label>Action:</label>
-            <select id="eml-action">
-                <option value="analyze">Analyze</option>
-                <option value="insert">Insert</option>
-                <option value="report_false_positive">Report False Positive</option>
-            </select>
+            <section id="report-tab" class="tab-panel">
+                <div class="panel-header">
+                    <h2>🚨 Report False Positive</h2>
+                    <p class="panel-description">Report an email that was incorrectly flagged as phishing</p>
+                </div>
+                
+                <form class="email-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="report-subject">Subject *</label>
+                            <input type="text" id="report-subject" placeholder="Enter email subject" required />
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="report-body">Body (Base64) *</label>
+                        <textarea id="report-body" rows="4" placeholder="Enter base64 encoded email body" required></textarea>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="report-sender">Sender Email *</label>
+                            <input type="email" id="report-sender" placeholder="sender@example.com" required />
+                        </div>
+                        <div class="form-group">
+                            <label for="report-reply_to">Reply To</label>
+                            <input type="email" id="report-reply_to" placeholder="replyto@example.com" />
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="report-customerId">Customer ID</label>
+                            <input type="text" id="report-customerId" placeholder="12345" />
+                        </div>
+                    </div>
+                    
+                    <button type="button" class="primary-button" onclick="reportFalsePositive()">
+                        🚨 Report False Positive
+                    </button>
+                </form>
+                
+                <div id="report-result" class="result"></div>
+            </section>
 
-            <div id="insert-options" style="display:none;">
-                <!-- Updated dropdown for Insert in EML workflow -->
-                <label>Insert as:</label>
-                <select id="insert-label">
-                    <option value="transactional">transactional</option>
-                    <option value="business">business</option>
-                    <option value="newsletter">newsletter</option>
-                    <option value="notification">notification</option>
-                    <option value="marketing">marketing</option>
-                    <option value="spam">spam</option>
-                    <option value="bounced">bounced</option>
-                </select>
-            </div>
+            <section id="eml-tab" class="tab-panel">
+                <div class="panel-header">
+                    <h2>📁 EML File Processing</h2>
+                    <p class="panel-description">Upload and process EML files with automatic parsing</p>
+                </div>
+                
+                <form class="email-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="eml-action">Action *</label>
+                            <select id="eml-action" required>
+                                <option value="">Select action</option>
+                                <option value="analyze">🔍 Analyze</option>
+                                <option value="insert">📥 Insert</option>
+                                <option value="report_false_positive">🚨 Report False Positive</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="eml-customerId">Customer ID</label>
+                            <input type="text" id="eml-customerId" placeholder="12345" />
+                        </div>
+                    </div>
 
-            <label>Customer ID (optional):</label>
-            <input type="text" id="eml-customerId" placeholder="12345"/>
+                    <div id="insert-options" class="form-group" style="display:none;">
+                        <label for="insert-label">Insert as Type *</label>
+                        <select id="insert-label">
+                            <option value="">Select email type</option>
+                            <option value="transactional">Transactional</option>
+                            <option value="business">Business</option>
+                            <option value="newsletter">Newsletter</option>
+                            <option value="notification">Notification</option>
+                            <option value="marketing">Marketing</option>
+                            <option value="spam">Spam</option>
+                            <option value="bounced">Bounced</option>
+                        </select>
+                    </div>
 
-            <label>Choose EML File:</label>
-            <input type="file" id="eml-file" accept=".eml" />
-
-            <button onclick="handleEml()">Upload & Process EML</button>
-            <div id="eml-result" class="result"></div>
-        </section>
+                    <div class="form-group">
+                        <label for="eml-file">EML File *</label>
+                        <div class="file-upload-area">
+                            <input type="file" id="eml-file" accept=".eml" required />
+                            <div class="file-upload-text">
+                                <span class="upload-icon">📎</span>
+                                <span>Choose EML file or drag and drop</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button type="button" class="primary-button" onclick="handleEml()">
+                        📁 Upload & Process EML
+                    </button>
+                </form>
+                
+                <div id="eml-result" class="result"></div>
+            </section>
+        </main>
     </div>
 
     <script>
         const API_BASE_URL = "{{ api_base_url }}";
 
-        const emlActionSelect = document.getElementById('eml-action');
-        const insertOptionsDiv = document.getElementById('insert-options');
-        emlActionSelect.addEventListener('change', () => {
-            if (emlActionSelect.value === 'insert') {
-                insertOptionsDiv.style.display = 'block';
-            } else {
-                insertOptionsDiv.style.display = 'none';
+        // Tab switching functionality
+        function switchTab(event, tabId) {
+            // Remove active class from all tab buttons
+            const tabButtons = document.querySelectorAll('.tab-button');
+            tabButtons.forEach(button => button.classList.remove('active'));
+            
+            // Remove active class from all tab panels
+            const tabPanels = document.querySelectorAll('.tab-panel');
+            tabPanels.forEach(panel => panel.classList.remove('active'));
+            
+            // Add active class to clicked button
+            event.currentTarget.classList.add('active');
+            
+            // Show the selected tab panel
+            document.getElementById(tabId).classList.add('active');
+        }
+
+        // Initialize tab functionality when DOM loads
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set up EML action dropdown functionality
+            const emlActionSelect = document.getElementById('eml-action');
+            const insertOptionsDiv = document.getElementById('insert-options');
+            
+            if (emlActionSelect && insertOptionsDiv) {
+                emlActionSelect.addEventListener('change', () => {
+                    if (emlActionSelect.value === 'insert') {
+                        insertOptionsDiv.style.display = 'block';
+                    } else {
+                        insertOptionsDiv.style.display = 'none';
+                    }
+                });
             }
+
+            // Add keyboard navigation for tabs
+            const tabButtons = document.querySelectorAll('.tab-button');
+            tabButtons.forEach((button, index) => {
+                button.addEventListener('keydown', (e) => {
+                    if (e.key === 'ArrowLeft') {
+                        e.preventDefault();
+                        const prevIndex = index === 0 ? tabButtons.length - 1 : index - 1;
+                        tabButtons[prevIndex].focus();
+                        tabButtons[prevIndex].click();
+                    } else if (e.key === 'ArrowRight') {
+                        e.preventDefault();
+                        const nextIndex = index === tabButtons.length - 1 ? 0 : index + 1;
+                        tabButtons[nextIndex].focus();
+                        tabButtons[nextIndex].click();
+                    }
+                });
+            });
+
+            // File upload drag and drop enhancement
+            const fileInputs = document.querySelectorAll('input[type="file"]');
+            fileInputs.forEach(fileInput => {
+                const uploadArea = fileInput.closest('.file-upload-area');
+                if (uploadArea) {
+                    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                        uploadArea.addEventListener(eventName, preventDefaults, false);
+                    });
+
+                    ['dragenter', 'dragover'].forEach(eventName => {
+                        uploadArea.addEventListener(eventName, highlight, false);
+                    });
+
+                    ['dragleave', 'drop'].forEach(eventName => {
+                        uploadArea.addEventListener(eventName, unhighlight, false);
+                    });
+
+                    uploadArea.addEventListener('drop', handleDrop, false);
+
+                    function preventDefaults(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                    }
+
+                    function highlight(e) {
+                        uploadArea.classList.add('highlight');
+                    }
+
+                    function unhighlight(e) {
+                        uploadArea.classList.remove('highlight');
+                    }
+
+                    function handleDrop(e) {
+                        const dt = e.dataTransfer;
+                        const files = dt.files;
+                        fileInput.files = files;
+                        
+                        // Update the display text
+                        const fileText = uploadArea.querySelector('.file-upload-text span:last-child');
+                        if (fileText && files.length > 0) {
+                            fileText.textContent = files[0].name;
+                        }
+                    }
+                }
+            });
         });
 
-        async function insertEmail() {
-            const subject = document.getElementById('insert-subject').value;
-            const body = document.getElementById('insert-body').value;
-            const sender = document.getElementById('insert-sender').value;
-            const reply_to = document.getElementById('insert-reply_to').value;
-            const type = document.getElementById('insert-type').value;
-            const customerId = document.getElementById('insert-customerId').value;
+        function validateEmail(email) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email);
+        }
 
-            const payload = {
-                subject, body, sender,
-                reply_to: reply_to || null,
-                type,
-                customerId: customerId || null
+        function validateInputs(form) {
+            const errors = [];
+            
+            if (!form.subject.trim()) {
+                errors.push('Subject is required');
+            }
+            if (!form.body.trim()) {
+                errors.push('Body is required');
+            }
+            if (!form.sender.trim()) {
+                errors.push('Sender is required');
+            } else if (!validateEmail(form.sender)) {
+                errors.push('Sender must be a valid email address');
+            }
+            if (form.reply_to && !validateEmail(form.reply_to)) {
+                errors.push('Reply To must be a valid email address');
+            }
+            
+            return errors;
+        }
+
+        function setLoading(resultDiv, isLoading, message = '') {
+            if (isLoading) {
+                resultDiv.className = 'result loading';
+                resultDiv.innerHTML = `<div class="spinner"></div> ${message}`;
+            }
+        }
+
+        function setResult(resultDiv, success, message) {
+            resultDiv.className = success ? 'result success' : 'result error';
+            resultDiv.textContent = message;
+        }
+
+        async function insertEmail() {
+            const form = {
+                subject: document.getElementById('insert-subject').value,
+                body: document.getElementById('insert-body').value,
+                sender: document.getElementById('insert-sender').value,
+                reply_to: document.getElementById('insert-reply_to').value,
+                type: document.getElementById('insert-type').value,
+                customerId: document.getElementById('insert-customerId').value
             };
 
             const resultDiv = document.getElementById('insert-result');
-            resultDiv.innerText = "Inserting...";
+            
+            // Validate inputs
+            const errors = validateInputs(form);
+            if (errors.length > 0) {
+                setResult(resultDiv, false, 'Validation errors: ' + errors.join(', '));
+                return;
+            }
+
+            const payload = {
+                subject: form.subject,
+                body: form.body,
+                sender: form.sender,
+                reply_to: form.reply_to || null,
+                type: form.type,
+                customerId: form.customerId || null
+            };
+
+            setLoading(resultDiv, true, "Inserting email...");
+            
             try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 30000); // 30s timeout
+
                 const resp = await fetch(`${API_BASE_URL}/insert`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
+                    body: JSON.stringify(payload),
+                    signal: controller.signal
                 });
+                
+                clearTimeout(timeoutId);
                 const data = await resp.json();
-                resultDiv.innerText = resp.ok ? data.message : ("Error: " + data.detail);
+                
+                if (resp.ok) {
+                    setResult(resultDiv, true, data.message || 'Email inserted successfully');
+                } else {
+                    setResult(resultDiv, false, `Error (${resp.status}): ${data.detail || 'Unknown error'}`);
+                }
             } catch (e) {
-                resultDiv.innerText = "Error: " + e;
+                if (e.name === 'AbortError') {
+                    setResult(resultDiv, false, 'Request timed out. Please try again.');
+                } else if (e instanceof TypeError) {
+                    setResult(resultDiv, false, 'Network error. Please check your connection.');
+                } else {
+                    setResult(resultDiv, false, `Error: ${e.message}`);
+                }
             }
         }
 
         async function analyzeEmail() {
-            const subject = document.getElementById('analyze-subject').value;
-            const body = document.getElementById('analyze-body').value;
-            const sender = document.getElementById('analyze-sender').value;
-            const reply_to = document.getElementById('analyze-reply_to').value;
-            const customerId = document.getElementById('analyze-customerId').value;
-
-            const payload = {
-                subject, body, sender,
-                reply_to: reply_to || null,
-                customerId: customerId || null
+            const form = {
+                subject: document.getElementById('analyze-subject').value,
+                body: document.getElementById('analyze-body').value,
+                sender: document.getElementById('analyze-sender').value,
+                reply_to: document.getElementById('analyze-reply_to').value,
+                customerId: document.getElementById('analyze-customerId').value
             };
 
             const resultDiv = document.getElementById('analyze-result');
-            resultDiv.innerText = "Analyzing...";
+            
+            // Validate inputs
+            const errors = validateInputs(form);
+            if (errors.length > 0) {
+                setResult(resultDiv, false, 'Validation errors: ' + errors.join(', '));
+                return;
+            }
+
+            const payload = {
+                subject: form.subject,
+                body: form.body,
+                sender: form.sender,
+                reply_to: form.reply_to || null,
+                customerId: form.customerId || null
+            };
+
+            setLoading(resultDiv, true, "Analyzing email...");
+            
             try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 30000);
+
                 const resp = await fetch(`${API_BASE_URL}/analyze`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
+                    body: JSON.stringify(payload),
+                    signal: controller.signal
                 });
+                
+                clearTimeout(timeoutId);
                 const data = await resp.json();
-                resultDiv.innerText = resp.ok ? JSON.stringify(data, null, 2) : ("Error: " + data.detail);
+                
+                if (resp.ok) {
+                    resultDiv.className = 'result success';
+                    resultDiv.innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+                } else {
+                    setResult(resultDiv, false, `Error (${resp.status}): ${data.detail || 'Unknown error'}`);
+                }
             } catch (e) {
-                resultDiv.innerText = "Error: " + e;
+                if (e.name === 'AbortError') {
+                    setResult(resultDiv, false, 'Request timed out. Please try again.');
+                } else if (e instanceof TypeError) {
+                    setResult(resultDiv, false, 'Network error. Please check your connection.');
+                } else {
+                    setResult(resultDiv, false, `Error: ${e.message}`);
+                }
             }
         }
 
         async function reportFalsePositive() {
-            const subject = document.getElementById('report-subject').value;
-            const body = document.getElementById('report-body').value;
-            const sender = document.getElementById('report-sender').value;
-            const reply_to = document.getElementById('report-reply_to').value;
-            const customerId = document.getElementById('report-customerId').value;
-
-            const payload = {
-                subject, body, sender,
-                reply_to: reply_to || null,
-                customerId: customerId || null
+            const form = {
+                subject: document.getElementById('report-subject').value,
+                body: document.getElementById('report-body').value,
+                sender: document.getElementById('report-sender').value,
+                reply_to: document.getElementById('report-reply_to').value,
+                customerId: document.getElementById('report-customerId').value
             };
 
             const resultDiv = document.getElementById('report-result');
-            resultDiv.innerText = "Reporting false positive...";
+            
+            // Validate inputs
+            const errors = validateInputs(form);
+            if (errors.length > 0) {
+                setResult(resultDiv, false, 'Validation errors: ' + errors.join(', '));
+                return;
+            }
+
+            const payload = {
+                subject: form.subject,
+                body: form.body,
+                sender: form.sender,
+                reply_to: form.reply_to || null,
+                customerId: form.customerId || null
+            };
+
+            setLoading(resultDiv, true, "Reporting false positive...");
+            
             try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 30000);
+
                 const resp = await fetch(`${API_BASE_URL}/report_false_positive`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
+                    body: JSON.stringify(payload),
+                    signal: controller.signal
                 });
+                
+                clearTimeout(timeoutId);
                 const data = await resp.json();
-                resultDiv.innerText = resp.ok ? data.message : ("Error: " + data.detail);
+                
+                if (resp.ok) {
+                    setResult(resultDiv, true, data.message || 'False positive reported successfully');
+                } else {
+                    setResult(resultDiv, false, `Error (${resp.status}): ${data.detail || 'Unknown error'}`);
+                }
             } catch (e) {
-                resultDiv.innerText = "Error: " + e;
+                if (e.name === 'AbortError') {
+                    setResult(resultDiv, false, 'Request timed out. Please try again.');
+                } else if (e instanceof TypeError) {
+                    setResult(resultDiv, false, 'Network error. Please check your connection.');
+                } else {
+                    setResult(resultDiv, false, `Error: ${e.message}`);
+                }
             }
         }
 
@@ -227,32 +560,46 @@
             const custId = document.getElementById('eml-customerId').value;
             const resultDiv = document.getElementById('eml-result');
             const isInsert = (action === 'insert');
-            // Insert label is now one of the 7 sub-labels
             const insertLabel = isInsert ? document.getElementById('insert-label').value : null;
 
             if (!fileInput.files || fileInput.files.length === 0) {
-                resultDiv.innerText = "Please select an EML file first.";
+                setResult(resultDiv, false, "Please select an EML file first.");
                 return;
             }
 
-            resultDiv.innerText = "Parsing EML...";
+            const file = fileInput.files[0];
+            if (!file.name.toLowerCase().endsWith('.eml')) {
+                setResult(resultDiv, false, "Please select a valid EML file.");
+                return;
+            }
+
+            setLoading(resultDiv, true, "Parsing EML file...");
+            
             try {
-                const file = fileInput.files[0];
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 60000); // 60s for file operations
+
                 const formData = new FormData();
                 formData.append('file', file);
 
                 const parseResp = await fetch(`${API_BASE_URL}/parse_eml`, {
                     method: 'POST',
-                    body: formData
+                    body: formData,
+                    signal: controller.signal
                 });
+                
                 const parseData = await parseResp.json();
+                
                 if (!parseResp.ok) {
-                    resultDiv.innerText = "Error parsing EML: " + parseData.detail;
+                    clearTimeout(timeoutId);
+                    setResult(resultDiv, false, `Error parsing EML (${parseResp.status}): ${parseData.detail || 'Unknown error'}`);
                     return;
                 }
 
                 const { subject, body, sender } = parseData.email;
-                resultDiv.innerText = "EML parsed. Now performing action: " + action + "...";
+                
+                // Update loading message for the action
+                setLoading(resultDiv, true, `EML parsed successfully. Performing ${action}...`);
 
                 let endpoint = "";
                 let payload = { subject, body, sender, customerId: custId || null };
@@ -261,7 +608,7 @@
                     endpoint = '/analyze';
                 } else if (action === 'insert') {
                     endpoint = '/insert';
-                    payload.type = insertLabel; // One of the 7 sub-labels
+                    payload.type = insertLabel;
                 } else if (action === 'report_false_positive') {
                     endpoint = '/report_false_positive';
                 }
@@ -269,16 +616,31 @@
                 const finalResp = await fetch(`${API_BASE_URL}${endpoint}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
+                    body: JSON.stringify(payload),
+                    signal: controller.signal
                 });
+                
+                clearTimeout(timeoutId);
                 const finalData = await finalResp.json();
-                if (!finalResp.ok) {
-                    resultDiv.innerText = "Action error: " + finalData.detail;
-                    return;
+                
+                if (finalResp.ok) {
+                    if (action === 'analyze') {
+                        resultDiv.className = 'result success';
+                        resultDiv.innerHTML = `<strong>Analysis Complete:</strong><pre>${JSON.stringify(finalData, null, 2)}</pre>`;
+                    } else {
+                        setResult(resultDiv, true, finalData.message || `${action} completed successfully`);
+                    }
+                } else {
+                    setResult(resultDiv, false, `Action error (${finalResp.status}): ${finalData.detail || 'Unknown error'}`);
                 }
-                resultDiv.innerText = JSON.stringify(finalData, null, 2);
             } catch (e) {
-                resultDiv.innerText = "Error: " + e;
+                if (e.name === 'AbortError') {
+                    setResult(resultDiv, false, 'Request timed out. Please try again.');
+                } else if (e instanceof TypeError) {
+                    setResult(resultDiv, false, 'Network error. Please check your connection.');
+                } else {
+                    setResult(resultDiv, false, `Error: ${e.message}`);
+                }
             }
         }
     </script>
