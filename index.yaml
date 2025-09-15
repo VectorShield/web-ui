@@ -2,6 +2,16 @@ apiVersion: v1
 entries:
   web-ui:
   - apiVersion: v2
+    appVersion: 1.2.0
+    created: "2025-09-15T12:57:35.250221896Z"
+    description: A Helm chart for the Phishing Detection Web UI
+    digest: 6ca47e08c500e7492a42b02a5376bda83af477285e56394230822e108e4f96e3
+    name: web-ui
+    type: application
+    urls:
+    - https://github.com/VectorShield/web-ui/releases/download/web-ui-0.1.3/web-ui-0.1.3.tgz
+    version: 0.1.3
+  - apiVersion: v2
     appVersion: 1.0.1
     created: "2025-04-16T02:21:35.727991021Z"
     description: A Helm chart for the Phishing Detection Web UI
@@ -21,4 +31,4 @@ entries:
     urls:
     - https://github.com/VectorShield/web-ui/releases/download/web-ui-0.1.0/web-ui-0.1.0.tgz
     version: 0.1.0
-generated: "2025-04-16T02:21:35.727997963Z"
+generated: "2025-09-15T12:57:35.250232756Z"
