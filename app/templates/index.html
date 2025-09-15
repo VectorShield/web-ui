@@ -23,6 +23,12 @@
             <button class="tab-button" onclick="switchTab(event, 'analyze-tab')" data-tab="analyze">
                 🔍 Analyze Email
             </button>
+            <button class="tab-button" onclick="switchTab(event, 'enhanced-tab')" data-tab="enhanced">
+                ⚡ Enhanced Analysis
+            </button>
+            <button class="tab-button" onclick="switchTab(event, 'ensemble-tab')" data-tab="ensemble">
+                🎯 Ensemble Analysis
+            </button>
             <button class="tab-button" onclick="switchTab(event, 'report-tab')" data-tab="report">
                 🚨 Report False Positive
             </button>
@@ -47,8 +53,8 @@
                     </div>
                     
                     <div class="form-group">
-                        <label for="insert-body">Body (Base64) *</label>
-                        <textarea id="insert-body" rows="4" placeholder="Enter base64 encoded email body" required></textarea>
+                        <label for="insert-body">Body *</label>
+                        <textarea id="insert-body" rows="6" placeholder="Enter email body content" required></textarea>
                     </div>
                     
                     <div class="form-row">
@@ -57,8 +63,19 @@
                             <input type="email" id="insert-sender" placeholder="sender@example.com" required />
                         </div>
                         <div class="form-group">
+                            <label for="insert-recipient">Recipient Email</label>
+                            <input type="email" id="insert-recipient" placeholder="recipient@example.com" />
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
                             <label for="insert-reply_to">Reply To</label>
                             <input type="email" id="insert-reply_to" placeholder="replyto@example.com" />
+                        </div>
+                        <div class="form-group">
+                            <label for="insert-attachments">Attachments (comma-separated)</label>
+                            <input type="text" id="insert-attachments" placeholder="file1.pdf, file2.doc" />
                         </div>
                     </div>
                     
@@ -105,8 +122,8 @@
                     </div>
                     
                     <div class="form-group">
-                        <label for="analyze-body">Body (Base64) *</label>
-                        <textarea id="analyze-body" rows="4" placeholder="Enter base64 encoded email body" required></textarea>
+                        <label for="analyze-body">Body *</label>
+                        <textarea id="analyze-body" rows="6" placeholder="Enter email body content" required></textarea>
                     </div>
                     
                     <div class="form-row">
@@ -115,16 +132,25 @@
                             <input type="email" id="analyze-sender" placeholder="sender@example.com" required />
                         </div>
                         <div class="form-group">
+                            <label for="analyze-recipient">Recipient Email</label>
+                            <input type="email" id="analyze-recipient" placeholder="recipient@example.com" />
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
                             <label for="analyze-reply_to">Reply To</label>
                             <input type="email" id="analyze-reply_to" placeholder="replyto@example.com" />
                         </div>
-                    </div>
-                    
-                    <div class="form-row">
                         <div class="form-group">
                             <label for="analyze-customerId">Customer ID</label>
                             <input type="text" id="analyze-customerId" placeholder="12345" />
                         </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="analyze-attachments">Attachments (comma-separated)</label>
+                        <input type="text" id="analyze-attachments" placeholder="file1.pdf, file2.doc" />
                     </div>
                     
                     <button type="button" class="primary-button" onclick="analyzeEmail()">
@@ -133,6 +159,120 @@
                 </form>
                 
                 <div id="analyze-result" class="result"></div>
+            </section>
+
+            <section id="enhanced-tab" class="tab-panel">
+                <div class="panel-header">
+                    <h2>⚡ Enhanced Analysis</h2>
+                    <p class="panel-description">Compare original vs enhanced model predictions with detailed improvements</p>
+                </div>
+
+                <form class="email-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="enhanced-subject">Subject *</label>
+                            <input type="text" id="enhanced-subject" placeholder="Enter email subject" required />
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="enhanced-body">Body *</label>
+                        <textarea id="enhanced-body" rows="6" placeholder="Enter email body content" required></textarea>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="enhanced-sender">Sender Email *</label>
+                            <input type="email" id="enhanced-sender" placeholder="sender@example.com" required />
+                        </div>
+                        <div class="form-group">
+                            <label for="enhanced-recipient">Recipient Email</label>
+                            <input type="email" id="enhanced-recipient" placeholder="recipient@example.com" />
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="enhanced-reply_to">Reply To</label>
+                            <input type="email" id="enhanced-reply_to" placeholder="replyto@example.com" />
+                        </div>
+                        <div class="form-group">
+                            <label for="enhanced-customerId">Customer ID</label>
+                            <input type="text" id="enhanced-customerId" placeholder="12345" />
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="enhanced-attachments">Attachments (comma-separated)</label>
+                        <input type="text" id="enhanced-attachments" placeholder="file1.pdf, file2.doc" />
+                    </div>
+
+                    <button type="button" class="primary-button" onclick="analyzeEmailEnhanced()">
+                        ⚡ Enhanced Analysis
+                    </button>
+                </form>
+
+                <div id="enhanced-result" class="result"></div>
+            </section>
+
+            <section id="ensemble-tab" class="tab-panel">
+                <div class="panel-header">
+                    <h2>🎯 Ensemble Analysis</h2>
+                    <p class="panel-description">Combine multiple model predictions with HuggingFace integration for maximum accuracy</p>
+                </div>
+
+                <form class="email-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="ensemble-subject">Subject *</label>
+                            <input type="text" id="ensemble-subject" placeholder="Enter email subject" required />
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="ensemble-body">Body *</label>
+                        <textarea id="ensemble-body" rows="6" placeholder="Enter email body content" required></textarea>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="ensemble-sender">Sender Email *</label>
+                            <input type="email" id="ensemble-sender" placeholder="sender@example.com" required />
+                        </div>
+                        <div class="form-group">
+                            <label for="ensemble-recipient">Recipient Email</label>
+                            <input type="email" id="ensemble-recipient" placeholder="recipient@example.com" />
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="ensemble-reply_to">Reply To</label>
+                            <input type="email" id="ensemble-reply_to" placeholder="replyto@example.com" />
+                        </div>
+                        <div class="form-group">
+                            <label for="ensemble-customerId">Customer ID</label>
+                            <input type="text" id="ensemble-customerId" placeholder="12345" />
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="ensemble-attachments">Attachments (comma-separated)</label>
+                            <input type="text" id="ensemble-attachments" placeholder="file1.pdf, file2.doc" />
+                        </div>
+                        <div class="form-group">
+                            <label for="ensemble-huggingface_score">HuggingFace Score (0-100)</label>
+                            <input type="number" id="ensemble-huggingface_score" placeholder="65" min="0" max="100" />
+                        </div>
+                    </div>
+
+                    <button type="button" class="primary-button" onclick="analyzeEmailEnsemble()">
+                        🎯 Ensemble Analysis
+                    </button>
+                </form>
+
+                <div id="ensemble-result" class="result"></div>
             </section>
 
             <section id="report-tab" class="tab-panel">
@@ -150,8 +290,8 @@
                     </div>
                     
                     <div class="form-group">
-                        <label for="report-body">Body (Base64) *</label>
-                        <textarea id="report-body" rows="4" placeholder="Enter base64 encoded email body" required></textarea>
+                        <label for="report-body">Body *</label>
+                        <textarea id="report-body" rows="6" placeholder="Enter email body content" required></textarea>
                     </div>
                     
                     <div class="form-row">
@@ -160,16 +300,25 @@
                             <input type="email" id="report-sender" placeholder="sender@example.com" required />
                         </div>
                         <div class="form-group">
+                            <label for="report-recipient">Recipient Email</label>
+                            <input type="email" id="report-recipient" placeholder="recipient@example.com" />
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
                             <label for="report-reply_to">Reply To</label>
                             <input type="email" id="report-reply_to" placeholder="replyto@example.com" />
                         </div>
-                    </div>
-                    
-                    <div class="form-row">
                         <div class="form-group">
                             <label for="report-customerId">Customer ID</label>
                             <input type="text" id="report-customerId" placeholder="12345" />
                         </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="report-attachments">Attachments (comma-separated)</label>
+                        <input type="text" id="report-attachments" placeholder="file1.pdf, file2.doc" />
                     </div>
                     
                     <button type="button" class="primary-button" onclick="reportFalsePositive()">
@@ -346,7 +495,7 @@
 
         function validateInputs(form) {
             const errors = [];
-            
+
             if (!form.subject.trim()) {
                 errors.push('Subject is required');
             }
@@ -358,10 +507,13 @@
             } else if (!validateEmail(form.sender)) {
                 errors.push('Sender must be a valid email address');
             }
+            if (form.recipient && !validateEmail(form.recipient)) {
+                errors.push('Recipient must be a valid email address');
+            }
             if (form.reply_to && !validateEmail(form.reply_to)) {
                 errors.push('Reply To must be a valid email address');
             }
-            
+
             return errors;
         }
 
@@ -377,18 +529,25 @@
             resultDiv.textContent = message;
         }
 
+        function parseAttachments(attachmentsStr) {
+            if (!attachmentsStr || !attachmentsStr.trim()) return [];
+            return attachmentsStr.split(',').map(att => att.trim()).filter(att => att.length > 0);
+        }
+
         async function insertEmail() {
             const form = {
                 subject: document.getElementById('insert-subject').value,
                 body: document.getElementById('insert-body').value,
                 sender: document.getElementById('insert-sender').value,
+                recipient: document.getElementById('insert-recipient').value,
                 reply_to: document.getElementById('insert-reply_to').value,
                 type: document.getElementById('insert-type').value,
-                customerId: document.getElementById('insert-customerId').value
+                customerId: document.getElementById('insert-customerId').value,
+                attachments: document.getElementById('insert-attachments').value
             };
 
             const resultDiv = document.getElementById('insert-result');
-            
+
             // Validate inputs
             const errors = validateInputs(form);
             if (errors.length > 0) {
@@ -400,7 +559,9 @@
                 subject: form.subject,
                 body: form.body,
                 sender: form.sender,
+                recipient: form.recipient || null,
                 reply_to: form.reply_to || null,
+                attachments: parseAttachments(form.attachments),
                 type: form.type,
                 customerId: form.customerId || null
             };
@@ -442,12 +603,14 @@
                 subject: document.getElementById('analyze-subject').value,
                 body: document.getElementById('analyze-body').value,
                 sender: document.getElementById('analyze-sender').value,
+                recipient: document.getElementById('analyze-recipient').value,
                 reply_to: document.getElementById('analyze-reply_to').value,
-                customerId: document.getElementById('analyze-customerId').value
+                customerId: document.getElementById('analyze-customerId').value,
+                attachments: document.getElementById('analyze-attachments').value
             };
 
             const resultDiv = document.getElementById('analyze-result');
-            
+
             // Validate inputs
             const errors = validateInputs(form);
             if (errors.length > 0) {
@@ -459,7 +622,9 @@
                 subject: form.subject,
                 body: form.body,
                 sender: form.sender,
+                recipient: form.recipient || null,
                 reply_to: form.reply_to || null,
+                attachments: parseAttachments(form.attachments),
                 customerId: form.customerId || null
             };
 
@@ -481,7 +646,27 @@
                 
                 if (resp.ok) {
                     resultDiv.className = 'result success';
-                    resultDiv.innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+                    const score = data.phishing_score || 0;
+                    const riskLevel = score < 31 ? 'Low' : score < 61 ? 'Medium' : 'High';
+                    const riskColor = score < 31 ? '#28a745' : score < 61 ? '#ffc107' : '#dc3545';
+
+                    resultDiv.innerHTML = `
+                        <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                            <div style="background: ${riskColor}; color: white; padding: 0.5rem 1rem; border-radius: 20px; font-weight: bold;">
+                                Score: ${score}/100
+                            </div>
+                            <div style="color: ${riskColor}; font-weight: bold;">
+                                Risk: ${riskLevel} (${data.closest_match || 'unknown'})
+                            </div>
+                            <div style="color: #666;">
+                                Confidence: ${data.confidence_level || 'Unknown'}
+                            </div>
+                        </div>
+                        <details>
+                            <summary style="cursor: pointer; font-weight: bold; margin-bottom: 0.5rem;">Analysis Details</summary>
+                            <pre style="margin-top: 0.5rem;">${JSON.stringify(data, null, 2)}</pre>
+                        </details>
+                    `;
                 } else {
                     setResult(resultDiv, false, `Error (${resp.status}): ${data.detail || 'Unknown error'}`);
                 }
@@ -501,12 +686,14 @@
                 subject: document.getElementById('report-subject').value,
                 body: document.getElementById('report-body').value,
                 sender: document.getElementById('report-sender').value,
+                recipient: document.getElementById('report-recipient').value,
                 reply_to: document.getElementById('report-reply_to').value,
-                customerId: document.getElementById('report-customerId').value
+                customerId: document.getElementById('report-customerId').value,
+                attachments: document.getElementById('report-attachments').value
             };
 
             const resultDiv = document.getElementById('report-result');
-            
+
             // Validate inputs
             const errors = validateInputs(form);
             if (errors.length > 0) {
@@ -518,7 +705,9 @@
                 subject: form.subject,
                 body: form.body,
                 sender: form.sender,
+                recipient: form.recipient || null,
                 reply_to: form.reply_to || null,
+                attachments: parseAttachments(form.attachments),
                 customerId: form.customerId || null
             };
 
@@ -596,13 +785,13 @@
                     return;
                 }
 
-                const { subject, body, sender } = parseData.email;
-                
+                const { subject, body, sender, recipient } = parseData;
+
                 // Update loading message for the action
                 setLoading(resultDiv, true, `EML parsed successfully. Performing ${action}...`);
 
                 let endpoint = "";
-                let payload = { subject, body, sender, customerId: custId || null };
+                let payload = { subject, body, sender, recipient: recipient || null, customerId: custId || null };
 
                 if (action === 'analyze') {
                     endpoint = '/analyze';
@@ -626,12 +815,237 @@
                 if (finalResp.ok) {
                     if (action === 'analyze') {
                         resultDiv.className = 'result success';
-                        resultDiv.innerHTML = `<strong>Analysis Complete:</strong><pre>${JSON.stringify(finalData, null, 2)}</pre>`;
+                        const score = finalData.phishing_score || 0;
+                        const riskLevel = score < 31 ? 'Low' : score < 61 ? 'Medium' : 'High';
+                        const riskColor = score < 31 ? '#28a745' : score < 61 ? '#ffc107' : '#dc3545';
+
+                        resultDiv.innerHTML = `
+                            <strong>EML Analysis Complete:</strong>
+                            <div style="display: flex; align-items: center; gap: 1rem; margin: 1rem 0;">
+                                <div style="background: ${riskColor}; color: white; padding: 0.5rem 1rem; border-radius: 20px; font-weight: bold;">
+                                    Score: ${score}/100
+                                </div>
+                                <div style="color: ${riskColor}; font-weight: bold;">
+                                    Risk: ${riskLevel} (${finalData.closest_match || 'unknown'})
+                                </div>
+                                <div style="color: #666;">
+                                    Confidence: ${finalData.confidence_level || 'Unknown'}
+                                </div>
+                            </div>
+                            <details>
+                                <summary style="cursor: pointer; font-weight: bold; margin-bottom: 0.5rem;">Analysis Details</summary>
+                                <pre style="margin-top: 0.5rem;">${JSON.stringify(finalData, null, 2)}</pre>
+                            </details>
+                        `;
                     } else {
                         setResult(resultDiv, true, finalData.message || `${action} completed successfully`);
                     }
                 } else {
                     setResult(resultDiv, false, `Action error (${finalResp.status}): ${finalData.detail || 'Unknown error'}`);
+                }
+            } catch (e) {
+                if (e.name === 'AbortError') {
+                    setResult(resultDiv, false, 'Request timed out. Please try again.');
+                } else if (e instanceof TypeError) {
+                    setResult(resultDiv, false, 'Network error. Please check your connection.');
+                } else {
+                    setResult(resultDiv, false, `Error: ${e.message}`);
+                }
+            }
+        }
+
+        async function analyzeEmailEnhanced() {
+            const form = {
+                subject: document.getElementById('enhanced-subject').value,
+                body: document.getElementById('enhanced-body').value,
+                sender: document.getElementById('enhanced-sender').value,
+                recipient: document.getElementById('enhanced-recipient').value,
+                reply_to: document.getElementById('enhanced-reply_to').value,
+                customerId: document.getElementById('enhanced-customerId').value,
+                attachments: document.getElementById('enhanced-attachments').value
+            };
+
+            const resultDiv = document.getElementById('enhanced-result');
+
+            // Validate inputs
+            const errors = validateInputs(form);
+            if (errors.length > 0) {
+                setResult(resultDiv, false, 'Validation errors: ' + errors.join(', '));
+                return;
+            }
+
+            const payload = {
+                subject: form.subject,
+                body: form.body,
+                sender: form.sender,
+                recipient: form.recipient || null,
+                reply_to: form.reply_to || null,
+                attachments: parseAttachments(form.attachments),
+                customerId: form.customerId || null
+            };
+
+            setLoading(resultDiv, true, "Performing enhanced analysis...");
+
+            try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 30000);
+
+                const resp = await fetch(`${API_BASE_URL}/analyze/enhanced`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload),
+                    signal: controller.signal
+                });
+
+                clearTimeout(timeoutId);
+                const data = await resp.json();
+
+                if (resp.ok) {
+                    resultDiv.className = 'result success';
+
+                    const originalScore = data.original_score || 0;
+                    const enhancedScore = data.enhanced_score || 0;
+                    const improvement = enhancedScore - originalScore;
+
+                    const originalRiskLevel = originalScore < 31 ? 'Low' : originalScore < 61 ? 'Medium' : 'High';
+                    const enhancedRiskLevel = enhancedScore < 31 ? 'Low' : enhancedScore < 61 ? 'Medium' : 'High';
+
+                    const originalColor = originalScore < 31 ? '#28a745' : originalScore < 61 ? '#ffc107' : '#dc3545';
+                    const enhancedColor = enhancedScore < 31 ? '#28a745' : enhancedScore < 61 ? '#ffc107' : '#dc3545';
+
+                    resultDiv.innerHTML = `
+                        <h3>Enhanced Analysis Comparison</h3>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                            <div style="border: 2px solid ${originalColor}; border-radius: 8px; padding: 1rem;">
+                                <h4 style="margin: 0 0 0.5rem 0; color: ${originalColor};">Original Model</h4>
+                                <div style="background: ${originalColor}; color: white; padding: 0.5rem; border-radius: 4px; text-align: center; font-weight: bold;">
+                                    ${originalScore}/100 - ${originalRiskLevel} Risk
+                                </div>
+                                <p style="margin: 0.5rem 0 0 0; font-size: 0.9rem;">
+                                    Prediction: ${data.original_prediction || 'unknown'}<br>
+                                    Confidence: ${data.original_confidence || 'Unknown'}
+                                </p>
+                            </div>
+                            <div style="border: 2px solid ${enhancedColor}; border-radius: 8px; padding: 1rem;">
+                                <h4 style="margin: 0 0 0.5rem 0; color: ${enhancedColor};">Enhanced Model</h4>
+                                <div style="background: ${enhancedColor}; color: white; padding: 0.5rem; border-radius: 4px; text-align: center; font-weight: bold;">
+                                    ${enhancedScore}/100 - ${enhancedRiskLevel} Risk
+                                </div>
+                                <p style="margin: 0.5rem 0 0 0; font-size: 0.9rem;">
+                                    Prediction: ${data.enhanced_prediction || 'unknown'}<br>
+                                    Confidence: ${data.enhanced_confidence || 'Unknown'}
+                                </p>
+                            </div>
+                        </div>
+                        <div style="background: #f8f9fa; padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
+                            <strong>Improvements Applied:</strong> ${data.improvement_applied ? 'Yes' : 'No'}<br>
+                            <strong>Score Change:</strong> ${improvement > 0 ? '+' : ''}${improvement} points<br>
+                            <strong>Rule Boost:</strong> ${data.rule_boost || 0} points<br>
+                            <strong>Adaptive Threshold:</strong> ${data.adaptive_threshold || 50}%
+                        </div>
+                        <details>
+                            <summary style="cursor: pointer; font-weight: bold; margin-bottom: 0.5rem;">Full Analysis Details</summary>
+                            <pre style="margin-top: 0.5rem;">${JSON.stringify(data, null, 2)}</pre>
+                        </details>
+                    `;
+                } else {
+                    setResult(resultDiv, false, `Error (${resp.status}): ${data.detail || 'Unknown error'}`);
+                }
+            } catch (e) {
+                if (e.name === 'AbortError') {
+                    setResult(resultDiv, false, 'Request timed out. Please try again.');
+                } else if (e instanceof TypeError) {
+                    setResult(resultDiv, false, 'Network error. Please check your connection.');
+                } else {
+                    setResult(resultDiv, false, `Error: ${e.message}`);
+                }
+            }
+        }
+
+        async function analyzeEmailEnsemble() {
+            const form = {
+                subject: document.getElementById('ensemble-subject').value,
+                body: document.getElementById('ensemble-body').value,
+                sender: document.getElementById('ensemble-sender').value,
+                recipient: document.getElementById('ensemble-recipient').value,
+                reply_to: document.getElementById('ensemble-reply_to').value,
+                customerId: document.getElementById('ensemble-customerId').value,
+                attachments: document.getElementById('ensemble-attachments').value,
+                huggingface_score: document.getElementById('ensemble-huggingface_score').value
+            };
+
+            const resultDiv = document.getElementById('ensemble-result');
+
+            // Validate inputs
+            const errors = validateInputs(form);
+            if (errors.length > 0) {
+                setResult(resultDiv, false, 'Validation errors: ' + errors.join(', '));
+                return;
+            }
+
+            const payload = {
+                subject: form.subject,
+                body: form.body,
+                sender: form.sender,
+                recipient: form.recipient || null,
+                reply_to: form.reply_to || null,
+                attachments: parseAttachments(form.attachments),
+                customerId: form.customerId || null
+            };
+
+            let url = `${API_BASE_URL}/analyze/ensemble`;
+            if (form.huggingface_score && form.huggingface_score.trim()) {
+                url += `?huggingface_score=${encodeURIComponent(form.huggingface_score)}`;
+            }
+
+            setLoading(resultDiv, true, "Performing ensemble analysis...");
+
+            try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 30000);
+
+                const resp = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload),
+                    signal: controller.signal
+                });
+
+                clearTimeout(timeoutId);
+                const data = await resp.json();
+
+                if (resp.ok) {
+                    resultDiv.className = 'result success';
+
+                    const ensembleScore = data.ensemble_score || data.phishing_score || 0;
+                    const riskLevel = ensembleScore < 31 ? 'Low' : ensembleScore < 61 ? 'Medium' : 'High';
+                    const riskColor = ensembleScore < 31 ? '#28a745' : ensembleScore < 61 ? '#ffc107' : '#dc3545';
+
+                    resultDiv.innerHTML = `
+                        <h3>Ensemble Analysis Result</h3>
+                        <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                            <div style="background: ${riskColor}; color: white; padding: 0.75rem 1.5rem; border-radius: 25px; font-weight: bold; font-size: 1.1rem;">
+                                Ensemble Score: ${ensembleScore}/100
+                            </div>
+                            <div style="color: ${riskColor}; font-weight: bold; font-size: 1.1rem;">
+                                Risk Level: ${riskLevel}
+                            </div>
+                        </div>
+                        ${data.ensemble_prediction ? `
+                            <div style="background: #f8f9fa; padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
+                                <strong>Ensemble Prediction:</strong> ${data.ensemble_prediction}<br>
+                                <strong>Confidence:</strong> ${data.confidence || 'Unknown'}<br>
+                                ${form.huggingface_score ? `<strong>HuggingFace Input:</strong> ${form.huggingface_score}<br>` : ''}
+                                <strong>Model Combination:</strong> Multiple ML models + Vector similarity
+                            </div>
+                        ` : ''}
+                        <details>
+                            <summary style="cursor: pointer; font-weight: bold; margin-bottom: 0.5rem;">Analysis Details & Reasoning</summary>
+                            <pre style="margin-top: 0.5rem;">${JSON.stringify(data, null, 2)}</pre>
+                        </details>
+                    `;
+                } else {
+                    setResult(resultDiv, false, `Error (${resp.status}): ${data.detail || 'Unknown error'}`);
                 }
             } catch (e) {
                 if (e.name === 'AbortError') {

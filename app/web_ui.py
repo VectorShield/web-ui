@@ -15,7 +15,7 @@ from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from prometheus_client import Counter, Histogram, generate_latest, CONTENT_TYPE_LATEST
 
 BASE_DIR = Path(__file__).resolve().parent
-API_BASE_URL = os.getenv("API_BASE_URL", "http://localhost:5000")
+API_BASE_URL = os.getenv("API_BASE_URL", "http://172.17.0.2:5000")
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "*").split(",")
 
 app = FastAPI(
@@ -102,7 +102,8 @@ async def prometheus_and_security_middleware(request: Request, call_next):
             "script-src 'self' 'unsafe-inline'; "
             "style-src 'self' 'unsafe-inline'; "
             "img-src 'self' data:; "
-            "font-src 'self'"
+            "font-src 'self'; "
+            f"connect-src 'self' {API_BASE_URL}"
         )
 
     # Update metrics
